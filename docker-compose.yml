@@ -1,0 +1,89 @@
+version: '3.2'
+
+services:
+  node-master:
+    image: mysql:5.7
+    volumes:
+      - type: bind
+        source: ./conf/my.cnf.d/node_master_my.cnf
+        target: /etc/mysql/my.cnf
+      - type: bind
+        source: ./conf/initdb.d/node_master.sql
+        target: /docker-entrypoint-initdb.d/node_master.sql
+      - type: bind
+        source: ./conf/initdb.d/dbStocks.sql
+        target: /docker-entrypoint-initdb.d/dbStocks.sql
+      - type: bind
+        source: ./conf/docker.cnf
+        target: /etc/mysql/conf.d/docker.cnf 
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_MASTER_ROOT_PASSWORD}
+    ports:
+      - "3301:3306"
+    networks:
+      - mysql-replica
+    restart: always
+
+  node-slave-1:
+    image: mysql:5.7
+    volumes:
+      - type: bind
+        source: ./conf/my.cnf.d/node_slave_1_my.cnf
+        target: /etc/mysql/my.cnf
+      - type: bind
+        source: ./conf/initdb.d/node_slaves.sql
+        target: /docker-entrypoint-initdb.d/node_slaves.sql
+      - type: bind
+        source: ./conf/docker.cnf
+        target: /etc/mysql/conf.d/docker.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_MASTER_ROOT_PASSWORD}
+    ports:
+      - "3302:3306"
+    networks:
+      - mysql-replica
+    restart: always
+
+  node-slave-2:
+    image: mysql:5.7
+    volumes:
+      - type: bind
+        source: ./conf/my.cnf.d/node_slave_2_my.cnf
+        target: /etc/mysql/my.cnf
+      - type: bind
+        source: ./conf/initdb.d/node_slaves.sql
+        target: /docker-entrypoint-initdb.d/node_slaves.sql
+      - type: bind
+        source: ./conf/docker.cnf
+        target: /etc/mysql/conf.d/docker.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_MASTER_ROOT_PASSWORD}
+    ports:
+      - "3303:3306"
+    networks:
+      - mysql-replica
+    restart: always
+
+  node-slave-3:
+    image: mysql:5.7
+    volumes:
+      - type: bind
+        source: ./conf/my.cnf.d/node_slave_3_my.cnf
+        target: /etc/mysql/my.cnf
+      - type: bind
+        source: ./conf/initdb.d/node_slaves.sql
+        target: /docker-entrypoint-initdb.d/node_slaves.sql
+      - type: bind
+        source: ./conf/docker.cnf
+        target: /etc/mysql/conf.d/docker.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_MASTER_ROOT_PASSWORD}
+    ports:
+      - "3304:3306"
+    networks:
+      - mysql-replica
+    restart: always
+
+networks:
+  mysql-replica:
+    driver: bridge
